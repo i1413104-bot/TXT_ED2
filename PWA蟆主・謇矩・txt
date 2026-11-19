@@ -1,0 +1,59 @@
+TXT-ED Chromebook版 - PWAインストール・完全オフライン導入手順
+
+【重要：このアプリの配布方式】
+このZIPはPWAとしてインストールできる構成です。ただしPWAの初回インストールとService Workerによる初回キャッシュ作成には、HTTPSでアプリを一度開く必要があります。
+一度インストールと初回読み込みが完了すれば、TXT-ED本体・PDF処理ライブラリは端末内キャッシュから起動でき、通常利用時にインターネット接続は不要です。
+
+ASUS Chromebook Flip C101PA / ChromeOS 116 / Linux環境なしの場合は、GitHub PagesなどのHTTPS静的ホスティングを使う方法が簡単です。Linuxや開発環境は不要です。
+
+【A. GitHub PagesでHTTPS公開する】
+1. Chromebookまたは別のPCで https://github.com/ を開き、GitHubアカウントにサインインします（アカウントがなければ作成）。
+2. 「New repository」で新しいリポジトリを作成します。例：txt-ed-pwa
+3. 公開設定は「Public」を選び、リポジトリを作成します。
+4. リポジトリ画面の「Add file」→「Upload files」を選びます。
+5. このZIPを展開し、TXT-ED-Chromebookフォルダの中身をすべてアップロードします。
+   index.html / manifest.json / sw.js / icon-192.png / icon-512.png / libsフォルダが同じ階層になるようにしてください。
+   libsフォルダの中にはPDF処理用の3ファイルが入っています。
+6. 「Commit changes」で保存します。
+7. リポジトリの「Settings」→「Pages」を開きます。
+8. 「Build and deployment」の「Deploy from a branch」を選択します。
+9. Branchを「main」、フォルダを「/(root)」にして「Save」を押します。
+10. 数分待つと https://ユーザー名.github.io/txt-ed-pwa/ の形式のURLが表示されます。
+
+【B. Chromebookにアプリとしてインストールする】
+1. Chromebookをインターネットに接続し、上記GitHub PagesのURLをChromeで開きます。
+2. TXT-EDの画面が最後まで表示されるまで待ちます。初回はService Workerが必要ファイルをキャッシュします。
+3. Chrome右上の「︙」メニューを開き、「TXT-EDをインストール」または「アプリをインストール」を選びます。
+   表示名はChromeOS/Chromeの状態により異なることがあります。
+4. インストール後、ランチャー（アプリ一覧）にTXT-EDが追加されます。
+5. TXT-EDを一度起動し、画面が正常に表示されることを確認します。
+
+【C. オフライン動作を確認する】
+1. TXT-EDをオンライン状態で一度起動し、表示完了を確認します。
+2. Wi-Fiを切断します。
+3. ランチャーからTXT-EDを起動します。
+4. TXT-ED本体が起動することを確認します。PDFを使う場合はPDFを選んで表示・書き込み・書き出しを試してください。
+
+【オフライン対応範囲】
+- TXT-ED本体：Service Workerでキャッシュ
+- PDF.js、PDF worker、pdf-lib：ZIP同梱ファイルをキャッシュ
+- 外部CDNからライブラリを取得しません
+- PDFファイル自体は利用者が選択したローカルファイルを使用します
+
+【制約】
+- PWAの初回インストールおよび初回キャッシュ作成はHTTPS接続が必要です。インターネットに一度も接続せずにPWAを新規インストールすることはできません。
+- file://でindex.htmlを直接開いてもPWAインストールやService Workerは動作しません。
+- GitHub Pagesの公開URLはインターネット上に公開されます。TXT-EDに個人情報や文書データをアップロードする仕組みはありませんが、アプリの配布ファイル自体は公開状態になります。
+- ChromeOS 116の実機での最終動作確認は未実施です。ChromeOSのポリシーやブラウザ設定によってインストール表示が異なる場合があります。
+
+【ZIP内の構成】
+index.html                 TXT-ED本体
+manifest.json              PWA設定
+sw.js                      オフラインキャッシュ
+icon-192.png               アプリアイコン
+icon-512.png               アプリアイコン
+libs/pdf.min.js            PDF.js
+libs/pdf.worker.min.js     PDF.js worker
+libs/pdf-lib.min.js        PDF書き出しライブラリ
+README.txt                 基本機能の説明
+PWA導入手順.txt            この導入手順

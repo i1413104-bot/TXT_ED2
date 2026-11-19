@@ -1,0 +1,2243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" 
+content="width=
+device-width, 
+initial-scale=1.0, 
+maximum-scale=1.0, 
+user-scalable=no">
+<link rel="manifest" 
+href="manifest.json">
+<title>TXT_ED</title>
+<script src="./libs/pdf.min.js"></script>
+<script src="./libs/pdf-lib.min.js"></script>
+<style>
+body {
+margin: 0; 
+padding: 0;
+font-family: Arial, 
+sans-serif;
+background-color: 
+#f5f5f5;
+display: flex; 
+flex-direction: 
+column;
+height: 100vh; 
+overflow: hidden;
+}
+header {
+background-color: 
+#202124; 
+color: white;
+padding: 10px; 
+display: flex;
+flex-direction: 
+column; 
+gap: 8px; 
+z-index: 10;
+}
+</style>
+<style>
+.top-bar {
+display: flex; 
+justify-content: 
+space-between;
+align-items: center;
+}
+.left-group {
+display: flex; 
+align-items: center; 
+gap: 10px;
+}
+.f-tag {
+background-color: 
+#000000; 
+color: #ffffff;
+padding: 6px 12px; 
+font-weight: bold;
+font-style: italic;
+font-size: 20px;
+text-shadow: 
+2px 2px 3px #888888;
+border-radius: 4px; 
+display: inline-block;
+}
+#fileNameDisplay {
+font-weight: bold; 
+color: #e8eaed;
+background-color: 
+#3c4043; 
+padding: 6px 10px;
+border-radius: 4px; 
+cursor: pointer;
+border: 1px dashed 
+#5f6368;
+font-size: 13px;
+}
+.mode-switching {
+display: flex; 
+gap: 3px;
+}
+.mode-switching 
+button {
+background-color: 
+#3c4043; 
+color: #bdc1c6;
+border: 1px solid 
+#5f6368; 
+padding: 6px 10px;
+font-size: 12px; 
+border-radius: 4px;
+cursor: pointer; 
+font-weight: bold;
+}
+.mode-switching 
+button.active {
+background-color: 
+#1a73e8; 
+color: white;
+}
+#btnUndo, #btnRedo {
+background-color: 
+#5f6368;
+color: white;
+}
+</style>
+<style>
+.color-palette-bar {
+display: flex; 
+align-items: center;
+gap: 6px; 
+flex-wrap: wrap;
+}
+.decor-btns 
+button {
+background-color: 
+#3c4043; 
+color: white;
+border: 1px solid 
+#5f6368; 
+padding: 6px 10px;
+border-radius: 4px; 
+cursor: pointer;
+font-weight: bold;
+}
+.decor-btns 
+button.active {
+background-color: 
+#e28743 !important;
+border-color: 
+#e28743 !important;
+color: white !important;
+}
+.size-container {
+display: flex; 
+align-items: center; 
+gap: 4px;
+background-color: 
+#3c4043; 
+padding: 4px 6px;
+border-radius: 4px; 
+font-size: 12px;
+}
+.size-container 
+input[type="range"] { 
+width: 60px; 
+}
+.color-palette {
+display: flex; 
+align-items: center; 
+gap: 4px;
+background-color: 
+#303134; 
+padding: 4px; 
+border-radius: 6px;
+}
+.color-dot {
+width: 18px; 
+height: 18px; 
+border-radius: 4px;
+cursor: pointer; 
+border: 2px solid 
+transparent;
+}
+.color-dot.selected { 
+border-color: #ffffff; 
+}
+.custom-color-btn {
+color: white; 
+font-size: 11px;
+display: flex; 
+align-items: center; 
+gap: 2px;
+}
+.custom-color-btn 
+input[type="color"] {
+width: 14px; 
+height: 14px; 
+border: none; 
+background: none;
+}
+</style>
+<style>
+.shape-switching {
+display: none;
+gap: 2px;
+}
+.shape-switching.active {
+display: flex;
+}
+.shape-switching button {
+background-color: #3c4043;
+color: #bdc1c6;
+border: 1px solid #5f6368;
+padding: 6px 8px;
+font-size: 11px;
+border-radius: 4px;
+cursor: pointer;
+}
+.shape-switching 
+button.active {
+background-color: #e28743;
+color: white;
+}
+.img-wrapper {
+display: inline-block;
+}
+.img-btn {
+background-color: 
+#3c4043; 
+color: white;
+border: 1px solid 
+#5f6368; 
+padding: 6px 10px;
+border-radius: 4px; 
+cursor: pointer; 
+font-size: 12px;
+}
+.eraser-btn {
+background-color: 
+#3c4043; 
+color: white;
+border: 1px solid 
+#5f6368; 
+padding: 6px 10px;
+border-radius: 4px; 
+cursor: pointer; 
+font-size: 12px;
+}
+.eraser-btn.active {
+background-color: 
+#e28743; 
+border-color: 
+#e28743;
+}
+.action-grid {
+display: flex; 
+gap: 6px;
+}
+.btn-col {
+display: flex; 
+flex-direction: 
+column; 
+gap: 4px;
+}
+.btn-col button {
+background-color: 
+#1a73e8; 
+color: white; 
+border: none; 
+padding: 6px 10px; 
+font-size: 12px;
+font-weight: bold;
+border-radius: 4px; 
+cursor: pointer;
+min-width: 85px;
+}
+.pdf-btn {
+background-color: 
+#a51d24 !important;
+}
+.all-save-btn {
+background-color: 
+#117343 !important;
+height: 100%;
+}
+.page-add-btn {
+background-color: 
+#e28743 !important;
+}
+.page-del-btn {
+background-color: 
+#a51d24 !important;
+}
+.clear-btn { 
+background-color: 
+#a51d24; 
+color: white; 
+border: none;
+padding: 6px 10px;
+border-radius: 4px;
+font-size: 12px; 
+cursor: pointer;
+}
+</style>
+<style>
+.main-layout { 
+display: flex; 
+flex: 1; 
+overflow: hidden; 
+}
+.workspace { 
+position: relative; 
+flex: 3; 
+background: #e8eaed; 
+overflow-y: auto;
+}
+.page-container {
+display: flex;
+flex-direction: 
+column;
+align-items: center;
+gap: 20px; 
+padding: 20px;
+}
+.a4-page {
+position: relative;
+width: 210mm; 
+height: 297mm;
+background: #ffffff;
+box-shadow: 0 0 10px 
+rgba(0,0,0,0.15);
+box-sizing: 
+border-box;
+}
+.page-editor {
+position: absolute; 
+top: 0; 
+left: 0;
+width: 100%; 
+height: 100%; 
+padding: 20mm; 
+font-size: 16px; 
+line-height: 1.6; 
+outline: none;
+z-index: 1; 
+overflow: hidden; 
+box-sizing: 
+border-box;
+user-select: text !important;
+-webkit-user-select: text !important;
+}
+.img-block {
+user-select: none;
+z-index: 5;
+}
+.img-block img {
+pointer-events: none;
+}
+@media print {
+.img-handle {
+display: none !important;
+}
+}
+canvas {
+position: absolute; 
+top: 0; 
+left: 0;
+width: 100%; 
+height: 100%; 
+pointer-events: none;
+touch-action: none; 
+z-index: 2;
+}
+canvas.active-pen { 
+pointer-events: auto; 
+}
+</style><style>
+.preview-area {
+flex: 1; 
+background-color: 
+#f8f9fa;
+border-left: 2px 
+solid #dadce0;
+display: flex; 
+flex-direction: 
+column;
+}
+.preview-title {
+background-color: 
+#f1f3f4; 
+padding: 10px;
+font-size: 12px; 
+font-weight: bold; 
+color: #5f6368;
+border-bottom: 1px 
+solid #dadce0;
+}
+#fileListContainer { 
+flex: 2 1 0;
+min-height: 90px;
+overflow-y: auto;
+padding: 5px;
+}
+.pdf-library {
+flex: 1 1 33%;
+min-height: 170px;
+max-height: 38%;
+border-top: 2px solid #dadce0;
+background: #f1f3f4;
+display: flex;
+flex-direction: column;
+padding: 8px;
+gap: 6px;
+box-sizing: border-box;
+}
+.pdf-library-head { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+.pdf-library-title { font-size:13px; font-weight:bold; color:#3c4043; }
+.pdf-folder-btn { background:#1a73e8; color:white; border:0; border-radius:4px; padding:7px 9px; font-size:11px; font-weight:bold; cursor:pointer; }
+#pdfFolderStatus { color:#5f6368; font-size:10px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+#pdfFileList { overflow-y:auto; min-height:0; flex:1; }
+.pdf-file-item { display:block; width:100%; text-align:left; padding:7px 6px; margin-bottom:3px; border:1px solid #dadce0; border-radius:4px; background:#fff; color:#202124; font-size:11px; cursor:pointer; overflow-wrap:anywhere; }
+.pdf-file-item:hover, .pdf-file-item.active { background:#e8f0fe; border-color:#1a73e8; }
+.pdf-empty { color:#80868b; font-size:11px; padding:6px 2px; }
+.pdf-viewer-overlay { display:none; position:absolute; inset:0; z-index:20; background:#e8eaed; padding:12px; box-sizing:border-box; }
+.pdf-viewer-overlay.open { display:flex; flex-direction:column; }
+.pdf-viewer-toolbar { display:flex; align-items:center; gap:7px; color:#202124; padding:4px 2px 10px; min-height:34px; flex-wrap:wrap; }
+#pdfViewerName { font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1 1 140px; }
+.pdf-tool-btn { background:#3c4043; color:#fff; border:0; border-radius:4px; padding:7px 10px; font-size:11px; font-weight:bold; cursor:pointer; }
+.pdf-tool-btn.active { background:#1a73e8; }
+.pdf-viewer-close { background:#d93025; color:#fff; border:0; border-radius:4px; padding:8px 14px; font-weight:bold; cursor:pointer; }
+.pdf-stage { position:relative; flex:1; min-height:0; background:#fff; border-radius:4px; overflow:hidden; }
+#pdfStage { overflow:auto; }
+#pdfPagesContainer { min-height:100%; display:flex; flex-direction:column; align-items:center; gap:14px; padding:12px; box-sizing:border-box; }
+.pdf-page-wrap { position:relative; flex:none; background:#fff; box-shadow:0 1px 6px #0003; }
+.pdf-page-canvas { display:block; width:100%; height:100%; }
+.pdf-page-text { display:none; position:absolute; inset:0; z-index:3; padding:24px; box-sizing:border-box; outline:none; color:#111; font-size:18px; line-height:1.6; white-space:pre-wrap; overflow-wrap:anywhere; background:transparent; }
+.pdf-page-text.active { display:block; }
+.pdf-page-ink { position:absolute; inset:0; z-index:4; width:100%; height:100%; pointer-events:none; touch-action:none; }
+.pdf-page-ink.active { pointer-events:auto; cursor:crosshair; }
+.pdf-annotation-export-btn { background:#e28743 !important; color:#fff !important; border:0; border-radius:4px; padding:6px 10px; font-size:12px; font-weight:bold; cursor:pointer; }
+.pdf-annotation-export { border:1px solid #dadce0; border-radius:5px; padding:10px; margin:12px 0; background:#fff; break-inside:avoid; }
+.pdf-annotation-export h3 { margin:0 0 8px; font-size:14px; }
+.pdf-annotation-export .pdf-note-text { white-space:pre-wrap; overflow-wrap:anywhere; min-height:1em; }
+.pdf-annotation-export img { display:block; max-width:100%; height:auto; margin-top:8px; }
+
+.file-item {
+padding: 0; 
+margin-bottom: 4px;
+background-color: 
+white; 
+border: 1px solid 
+#dadce0;
+border-radius: 4px; 
+cursor: pointer;
+display: flex; 
+justify-content: 
+space-between; 
+align-items: center;
+font-size: 12px;
+user-select: none !important;
+-webkit-user-select: none !important;
+}
+.file-item.active {
+background-color: 
+#e8f0fe; 
+border-color: 
+#1a73e8; 
+font-weight: bold;
+}
+.file-controls {
+display: flex;
+align-items: center;
+gap: 2px;
+padding-right: 6px;
+}
+.move-btn {
+color: #1a73e8;
+cursor: pointer;
+padding: 2px 6px;
+font-size: 11px;
+font-weight: bold;
+border-radius: 3px;
+border: 1px solid 
+transparent;
+}
+.move-btn:hover {
+background-color: 
+#e8f0fe;
+border-color: 
+#1a73e8;
+}
+.file-item 
+.delete-btn { 
+color: #d93025; 
+cursor: pointer; 
+padding: 4px 8px; 
+font-weight: bold;
+}
+footer {
+background-color: 
+#f1f3f4; 
+color: #5f6368;
+padding: 5px 15px; 
+font-size: 12px;
+border-top: 1px 
+solid #dadce0;
+display: flex; 
+justify-content: 
+space-between; 
+z-index: 10;
+}
+#localFolderStatus {
+font-size: 11px;
+color: #bdc1c6;
+max-width: 220px;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+align-self: center;
+}
+.local-folder-btn {
+background-color: #188038 !important;
+}
+.local-folder-btn.saved {
+background-color: #137333 !important;
+}
+@media (max-width: 900px) {
+.action-grid { flex-wrap: wrap; }
+#localFolderStatus { max-width: 140px; }
+.pdf-library { min-height: 145px; }
+}
+@media (max-width: 600px) {
+.preview-area { min-width: 150px; }
+.pdf-library-head { align-items:flex-start; flex-direction:column; }
+}
+
+
+@media print {
+body { 
+background: none; 
+overflow: visible; 
+}
+header, 
+.preview-area, 
+footer { 
+display: none 
+!important; 
+}
+.main-layout, 
+.workspace { 
+display: block; 
+overflow: visible; 
+}
+.page-container { 
+padding: 0; 
+gap: 0; 
+display: block; 
+}
+.a4-page {
+width: 210mm; 
+height: 297mm;
+page-break-after: 
+always;
+box-shadow: none; 
+margin: 0;
+}
+.page-editor { 
+overflow: hidden; 
+}
+}
+</style>
+</head>
+<body>
+<header>
+<div class="top-bar">
+<div class="left-group">
+<span class="f-tag">
+テキストエディタ　TXT-ED
+</span>
+<span 
+id="fileNameDisplay" 
+title="右クリックで
+名前変更">
+memo1.txt
+</span>
+<div 
+class="mode-switching">
+<button id="btnText" 
+class="active" 
+onclick="
+setMode('text')">
+⌨️ 文字
+</button>
+<button id="btnPen" 
+onclick="
+setMode('pen')">
+✏️ ペン
+</button>
+<button id="btnRedo" 
+onclick="
+redoPen()">
+🔁 進む
+</button>
+<button id="btnUndo" 
+onclick="
+undoPen()">
+↩️ 戻る
+</button>
+</div>
+</div>
+<div 
+class="action-grid">
+<div class="btn-col">
+<button 
+onclick="
+createNewFile()">
+➕ 新規作成
+</button>
+<button 
+onclick="
+exportToPDF()" 
+class="pdf-btn">
+📄 PDF出力
+</button>
+</div>
+<div class="btn-col">
+<button 
+onclick="
+downloadAllFiles()" 
+class="all-save-btn">
+📦 一括保存
+</button>
+<button 
+onclick="chooseLocalFolder()" 
+class="local-folder-btn">
+📁 保存先を設定
+</button>
+</div>
+<div id="localFolderStatus" title="ローカル保存先">保存先: 未設定</div>
+<div class="btn-col">
+<button 
+onclick="
+addInputPage()" 
+class="page-add-btn">
+📄 ページ追加
+</button>
+<button 
+onclick="
+deleteLastPage()" 
+class="page-del-btn">
+🗑️ ページ削除
+</button>
+</div>
+</div>
+</div>
+<div 
+class="color-palette-bar">
+<div class="decor-btns" 
+onmousedown="
+event.preventDefault()">
+<button id="cmdBold"
+onclick="
+execCmd('bold')">
+B
+</button>
+<button id="cmdItalic"
+onclick="
+execCmd('italic')">
+ 𝘐 
+</button>
+</div>
+<div class="size-container">
+<span id="sliderLabel">サイズ:</span>
+<input type="range" 
+id="sizeSlider" 
+min="1" max="7" 
+value="3" 
+onmousedown="
+event.stopPropagation()"
+oninput="
+onSizeChange(
+this.value)">
+<span id="sliderValue">
+3
+</span>
+</div>
+<div class="shape-switching" 
+id="shapeBar">
+<button id="shapeFree" 
+class="active" 
+onclick="setShape('free')">
+✏️ 自由
+</button>
+<button id="shapeLine" 
+onclick="setShape('line')">
+📏 直線
+</button>
+<button id="shapeArrow" 
+onclick="setShape('arrow')">
+🏹 矢印
+</button>
+</div>
+<div 
+class="color-palette" 
+id="paletteContainer">
+<div 
+class="custom-color-btn" 
+onmousedown="
+event.preventDefault()">
+<span>➕:</span>
+<input type="color" 
+id="customColor" 
+onchange="
+addCustomColor(
+this.value)">
+</div>
+</div>
+<div class="img-wrapper">
+<button class="img-btn" 
+onclick="
+triggerImgUp()">
+🖼️ 画像貼付
+</button>
+<input type="file" 
+id="imgInput" 
+accept="image/*" 
+style="display:none" 
+onchange="
+insertImg(event)">
+</div>
+<button id="btnEraser" 
+class="eraser-btn" 
+onclick="
+setEraserMode()">
+🧽 消しゴム
+</button>
+<button class="clear-btn" 
+onclick="
+clearCanvas()">
+💥 手書き一括消去
+</button>
+<button id="pdfAnnotationExportBtn" class="pdf-annotation-export-btn" type="button" onclick="exportPdfAnnotations()" style="display:none">📤 書き出し</button>
+</div>
+</header>
+<div class="main-layout">
+<div class="workspace" 
+id="workspace">
+<div 
+class="page-container" 
+id="pageContainer">
+</div>
+<div id="pdfViewerOverlay" class="pdf-viewer-overlay" role="dialog" aria-modal="false" aria-label="PDF閲覧">
+  <div class="pdf-viewer-toolbar">
+    <span id="pdfViewerName">PDF閲覧</span>
+    <button id="pdfTextModeBtn" class="pdf-tool-btn" type="button" onclick="setPdfAnnotationMode('text')">⌨ 文字書込</button>
+    <button id="pdfPenModeBtn" class="pdf-tool-btn" type="button" onclick="setPdfAnnotationMode('pen')">✏ 手書き</button>
+    <button id="pdfBrowseModeBtn" class="pdf-tool-btn active" type="button" onclick="setPdfAnnotationMode('browse')">▣ PDF操作</button>
+    <button class="pdf-viewer-close" type="button" onclick="closePdfViewer()">閉じる ✕</button>
+  </div>
+  <div class="pdf-stage" id="pdfStage">
+    <div id="pdfPagesContainer" aria-label="PDFページ"></div>
+  </div>
+</div>
+</div>
+<div class="preview-area">
+<div class="preview-title">
+<span>
+テキストファイル一覧
+</span>
+</div>
+<div id="fileListContainer"></div>
+<section class="pdf-library" aria-label="PDF閲覧">
+  <div class="pdf-library-head">
+    <span class="pdf-library-title">PDF閲覧</span>
+    <button class="pdf-folder-btn" type="button" onclick="choosePdfFolder()">📁 フォルダ選択</button>
+  </div>
+  <div id="pdfFolderStatus">PDFフォルダ: 未選択</div>
+  <div id="pdfFileList"><div class="pdf-empty">フォルダを選択してください</div></div>
+  <input id="pdfFallbackInput" type="file" accept="application/pdf,.pdf" webkitdirectory directory multiple style="display:none" onchange="loadPdfFilesFromInput(event)">
+</section>
+</div>
+</div>
+<footer>
+<span id="charCount">
+文字数: 0
+</span>
+<span id="statusHint">
+状態: ⌨️ 文字入力
+</span>
+</footer>
+<script>
+const charCount = 
+document.getElementById('charCount');
+const workspace = 
+document.getElementById('workspace');
+const statusHint = 
+document.getElementById('statusHint');
+const sliderLabel = 
+document.getElementById('sliderLabel');
+const sliderValue = 
+document.getElementById('sliderValue');
+const sizeSlider = 
+document.getElementById('sizeSlider');
+const fileNameDisplay = 
+document.getElementById('fileNameDisplay');
+const fileListContainer = 
+document.getElementById('fileListContainer');
+const btnEraser = 
+document.getElementById('btnEraser');
+const pageContainer = 
+document.getElementById('pageContainer');
+const shapeBar = 
+document.getElementById('shapeBar');
+
+let currentMode = 'text';
+let isEraser = false;
+let currentShape = 'free';
+let selectedColor = '#000000';
+let currentFileName = 'memo1.txt';
+let penWidth = 3;
+let textFontSize = 3;
+let TXT_ED_FOLDER = {};
+let activePageIndex = 0;
+let localFolderHandle = null;
+let localSaveTimer = null;
+let localSaveBusy = false;
+let localSaveQueued = false;
+let storageWarningShown = false;
+const LOCAL_DATA_FILE = 'TXT_ED_DATA.json';
+let pdfFolderHandle = null;
+let pdfObjectUrl = null;
+let pdfOriginalBytes = null;
+let pdfDocument = null;
+let pdfPageLayers = [];
+let pdfCurrentName = 'document.pdf';
+let pdfEntries = [];
+let pdfAnnotationMode = 'browse';
+let pdfAnnotationDirty = false;
+let pdfInkDrawing = false;
+let pdfInkLast = null;
+let indexedDBSaveTimer = null;
+
+let undoStackMap = new Map();
+let redoStackMap = new Map();
+
+let targetEl = null;
+let dragMode = '';
+let startX = 0, startY = 0;
+let startW = 0;
+let startL = 0, startT = 0;
+let savedRange = null;
+
+function initMove(e, el, mode) {
+if (currentMode === 'pen') {
+e.preventDefault();
+e.stopPropagation();
+alert('画像の移動変更は\n文字モードで行ってください');
+return;
+}
+e.preventDefault();
+e.stopPropagation();
+targetEl = el;
+dragMode = mode;
+startX = e.clientX;
+startY = e.clientY;
+startW = el.offsetWidth;
+startL = el.offsetLeft;
+startT = el.offsetTop;
+document.addEventListener('mousemove', doMove);
+document.addEventListener('mouseup', stopMove);
+}
+
+function doMove(e) {
+if (!targetEl) return;
+const dx = e.clientX - startX;
+const dy = e.clientY - startY;
+if (dragMode === 'drag') {
+targetEl.style.left = (startL + dx) + 'px';
+targetEl.style.top = (startT + dy) + 'px';
+} else if (dragMode === 'size') {
+const newWidth = startW + dx;
+if (newWidth > 30) {
+targetEl.style.width = newWidth + 'px';
+}
+}
+}
+
+function stopMove() {
+document.removeEventListener('mousemove', doMove);
+document.removeEventListener('mouseup', stopMove);
+if (targetEl) {
+const pEditor = targetEl.closest('.page-editor');
+if (pEditor) pEditor.focus();
+}
+targetEl = null;
+saveCurrentFile();
+}
+</script>
+<script>
+const baseColors = [
+'#000000', '#7f7f7f', '#d93025', '#f9ab00', 
+'#f4b400', '#1e8e3e', '#117343', '#1a73e8', 
+'#12b5cb', '#9334e6', '#e52592', '#ffffff'
+];
+
+window.onload = async () => {
+if ("serviceWorker" in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+navigator.serviceWorker.register("sw.js").catch(err => console.warn('Service Worker登録失敗', err));
+}
+await restoreIndexedDBData();
+initPalette();
+if (localFileApiAvailable()) {
+showLocalSaveStatus('保存先: 未設定');
+} else {
+showLocalSaveStatus('保存先: ChromeOSアプリで利用可');
+}
+loadFolderData();
+initLocalFolder();
+initPdfAnnotationCanvas();
+initPdfFolder();
+window.addEventListener('beforeunload', () => { 
+saveCurrentFile(); 
+});
+fileNameDisplay.addEventListener('contextmenu', (e) => {
+e.preventDefault();
+changeFileName(currentFileName);
+});
+};
+
+function checkDecorState() {
+if (currentMode !== 'text') return;
+try {
+const isBold = document.queryCommandState('bold');
+const isItalic = document.queryCommandState('italic');
+document.getElementById('cmdBold').classList.toggle('active', isBold);
+document.getElementById('cmdItalic').classList.toggle('active', isItalic);
+} catch(e){}
+}
+
+function cleanEmptyImgBlocks(editor) {
+const blocks = editor.querySelectorAll('.img-block');
+blocks.forEach(b => {
+const img = b.querySelector('img');
+if (!img) {
+b.remove();
+}
+});
+}
+
+function saveSelection() {
+const sel = window.getSelection();
+if (sel && sel.rangeCount > 0) {
+const range = sel.getRangeAt(0);
+const node = range.startContainer;
+const ed = node.nodeType === 1 ? node : node.parentNode;
+if (ed && ed.closest && ed.closest('.page-editor')) {
+savedRange = range.cloneRange();
+}
+}
+checkDecorState();
+}
+
+function setActivePage(index) {
+activePageIndex = Math.max(0, parseInt(index) || 0);
+pageContainer.querySelectorAll('.a4-page').forEach(p => {
+const active = parseInt(p.dataset.index) === activePageIndex;
+p.classList.toggle('active-page', active);
+});
+}
+
+function setActivePageFromElement(el) {
+const page = el && el.closest ? el.closest('.a4-page') : null;
+if (page) setActivePage(page.dataset.index);
+}
+
+function getActivePage() {
+let page = pageContainer.querySelector('.a4-page[data-index="' + activePageIndex + '"]');
+if (!page) page = pageContainer.querySelector('.a4-page');
+if (page) setActivePage(page.dataset.index);
+return page;
+}
+
+function getActivePageIndex() {
+const page = getActivePage();
+return page ? parseInt(page.dataset.index) : 0;
+}
+
+function showLocalSaveStatus(text, isSaved = false) {
+const el = document.getElementById('localFolderStatus');
+if (!el) return;
+el.textContent = text;
+el.title = text;
+el.classList.toggle('saved', !!isSaved);
+}
+
+function localFileApiAvailable() {
+return typeof window.showDirectoryPicker === 'function';
+}
+
+function openLocalFolderDB() {
+return new Promise((resolve, reject) => {
+try {
+const req = indexedDB.open('TXT_ED_SETTINGS', 2);
+req.onupgradeneeded = () => {
+if (!req.result.objectStoreNames.contains('settings')) req.result.createObjectStore('settings');
+if (!req.result.objectStoreNames.contains('documents')) req.result.createObjectStore('documents');
+};
+req.onsuccess = () => resolve(req.result);
+req.onerror = () => reject(req.error);
+} catch (e) { reject(e); }
+});
+}
+
+async function persistLocalFolderHandle(handle) {
+try {
+const db = await openLocalFolderDB();
+await new Promise((resolve, reject) => {
+const tx = db.transaction('settings', 'readwrite');
+tx.objectStore('settings').put(handle, 'localFolderHandle');
+tx.oncomplete = resolve;
+tx.onerror = () => reject(tx.error);
+});
+db.close();
+} catch (e) { console.warn('保存先設定の保存に失敗しました', e); }
+}
+
+async function getPersistedLocalFolderHandle() {
+try {
+const db = await openLocalFolderDB();
+const value = await new Promise((resolve, reject) => {
+const tx = db.transaction('settings', 'readonly');
+const req = tx.objectStore('settings').get('localFolderHandle');
+req.onsuccess = () => resolve(req.result || null);
+req.onerror = () => reject(req.error);
+});
+db.close();
+return value;
+} catch (e) { return null; }
+}
+
+async function initLocalFolder() {
+if (!localFileApiAvailable()) return;
+const handle = await getPersistedLocalFolderHandle();
+if (!handle) return;
+try {
+const permission = await handle.queryPermission({ mode: 'readwrite' });
+if (permission === 'granted') {
+localFolderHandle = handle;
+showLocalSaveStatus('保存先: ' + (handle.name || '選択フォルダ') + ' ✓', true);
+const restored = await restoreFromLocalFolder();
+if (restored) return;
+} else {
+showLocalSaveStatus('保存先: ' + (handle.name || '再許可が必要'));
+}
+} catch (e) {
+console.warn('保存先設定の復元に失敗しました', e);
+}
+}
+
+async function chooseLocalFolder() {
+if (!localFileApiAvailable()) {
+alert('このChrome環境ではローカル保存先の選択機能が利用できません。\nアプリをChromeにインストールして使用するか、最新版Chromeで開いてください。');
+return;
+}
+try {
+const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
+if (handle && handle.kind === 'directory') {
+localFolderHandle = handle;
+await persistLocalFolderHandle(handle);
+showLocalSaveStatus('保存先: ' + (handle.name || '選択フォルダ'));
+await saveLocalDataFile();
+alert('保存先を設定しました。\n以後、編集内容をこのフォルダへ自動バックアップします。');
+}
+} catch (e) {
+if (e && e.name !== 'AbortError') {
+alert('保存先の設定に失敗しました: ' + (e.message || e));
+}
+}
+}
+
+function scheduleLocalFolderSave() {
+if (!localFolderHandle) return;
+clearTimeout(localSaveTimer);
+localSaveTimer = setTimeout(() => { saveLocalDataFile(); }, 500);
+}
+
+async function saveLocalDataFile() {
+if (!localFolderHandle) return;
+if (localSaveBusy) {
+localSaveQueued = true;
+return;
+}
+localSaveBusy = true;
+try {
+const fileHandle = await localFolderHandle.getFileHandle(LOCAL_DATA_FILE, { create: true });
+const writable = await fileHandle.createWritable();
+writable.write(JSON.stringify({
+version: 2,
+updatedAt: new Date().toISOString(),
+currentFileName,
+files: TXT_ED_FOLDER
+}));
+await writable.close();
+showLocalSaveStatus('保存先: ' + (localFolderHandle.name || '選択フォルダ') + ' ✓', true);
+} catch (e) {
+showLocalSaveStatus('保存先: 書き込みエラー');
+console.warn('ローカル保存に失敗しました', e);
+} finally {
+localSaveBusy = false;
+if (localSaveQueued) {
+localSaveQueued = false;
+setTimeout(() => saveLocalDataFile(), 0);
+}
+}
+}
+
+async function restoreFromLocalFolder() {
+if (!localFolderHandle) return false;
+try {
+const fileHandle = await localFolderHandle.getFileHandle(LOCAL_DATA_FILE);
+const file = await fileHandle.getFile();
+const text = await file.text();
+const data = JSON.parse(text);
+if (!data || !data.files) throw new Error('保存データ形式が不正です');
+TXT_ED_FOLDER = data.files;
+currentFileName = TXT_ED_FOLDER[data.currentFileName] ? data.currentFileName : Object.keys(TXT_ED_FOLDER)[0];
+try { localStorage.setItem('TXT_ED_curr', currentFileName); } catch(e) {}
+fileNameDisplay.textContent = currentFileName;
+loadFileContent(currentFileName);
+renderFileList();
+showLocalSaveStatus('保存先: ' + (localFolderHandle.name || '選択フォルダ') + ' ✓', true);
+return true;
+} catch (e) {
+return false;
+}
+}
+
+function scheduleIndexedDBSave() {
+  clearTimeout(indexedDBSaveTimer);
+  indexedDBSaveTimer = setTimeout(() => saveIndexedDBData(), 600);
+}
+
+async function saveIndexedDBData() {
+  try {
+    const db = await openLocalFolderDB();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction('documents', 'readwrite');
+      tx.objectStore('documents').put({ currentFileName, files: TXT_ED_FOLDER, updatedAt: Date.now() }, 'latest');
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+  } catch (e) { console.warn('IndexedDB保存に失敗しました', e); }
+}
+
+async function restoreIndexedDBData() {
+  try {
+    if (localStorage.getItem('TXT_ED_FOLDER')) return;
+  } catch (e) {}
+  try {
+    const db = await openLocalFolderDB();
+    if (!db.objectStoreNames.contains('documents')) { db.close(); return; }
+    const data = await new Promise((resolve, reject) => {
+      const tx = db.transaction('documents', 'readonly');
+      const req = tx.objectStore('documents').get('latest');
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+    db.close();
+    if (data && data.files && Object.keys(data.files).length) {
+      TXT_ED_FOLDER = data.files;
+      currentFileName = data.files[data.currentFileName] ? data.currentFileName : Object.keys(data.files)[0];
+      try {
+        localStorage.setItem('TXT_ED_FOLDER', JSON.stringify(TXT_ED_FOLDER));
+        localStorage.setItem('TXT_ED_curr', currentFileName);
+      } catch (e) {}
+    }
+  } catch (e) { console.warn('IndexedDB復元に失敗しました', e); }
+}
+
+function showStorageError(e) {
+console.error('TXT_ED localStorage save failed', e);
+showLocalSaveStatus(localFolderHandle ? '保存先: ローカルへ保存中' : '保存先: 未設定（ブラウザ容量超過）');
+if (!storageWarningShown) {
+storageWarningShown = true;
+alert('ブラウザ内保存の容量を超えた可能性があります。\n\n「📁 保存先を設定」でローカルフォルダを選択すると、大きな画像や手書きデータもバックアップできます。');
+}
+}
+
+function createPageElement(html, imgData, index) {
+const pageDiv = document.createElement('div');
+pageDiv.className = 'a4-page';
+pageDiv.dataset.index = index;
+pageDiv.addEventListener('mousedown', () => setActivePage(index));
+pageDiv.addEventListener('touchstart', () => setActivePage(index), { passive: true });
+
+const editorDiv = document.createElement('div');
+editorDiv.className = 'page-editor';
+editorDiv.contentEditable = 'true';
+editorDiv.innerHTML = html || '';
+editorDiv.oninput = () => {
+setActivePage(index);
+cleanEmptyImgBlocks(editorDiv);
+saveCurrentFile();
+checkDecorState();
+};
+
+editorDiv.onmouseup = () => { setActivePage(index); saveSelection(); };
+editorDiv.onselectionchange = () => { setActivePage(index); saveSelection(); };
+editorDiv.onkeyup = () => {
+setActivePage(index);
+cleanEmptyImgBlocks(editorDiv);
+saveSelection();
+};
+
+editorDiv.addEventListener('click', (e) => {
+if (currentMode !== 'text') return;
+const sel = window.getSelection();
+if (sel && !sel.isCollapsed) return;
+
+let range = null;
+if (document.caretRangeFromPoint) {
+range = document.caretRangeFromPoint(e.clientX, e.clientY);
+} else if (document.caretPositionFromPoint) {
+const pos = document.caretPositionFromPoint(e.clientX, e.clientY);
+if (pos) {
+range = document.createRange();
+range.setStart(pos.offsetNode, pos.offset);
+range.setEnd(pos.offsetNode, pos.offset);
+}
+}
+if (range) {
+sel.removeAllRanges();
+sel.addRange(range);
+saveSelection();
+}
+checkDecorState();
+});
+
+editorDiv.addEventListener('keydown', (e) => {
+if (e.key === 'Enter') {
+const br = document.createElement('br');
+br.style.clear = 'both';
+const sel = window.getSelection();
+if (sel && sel.rangeCount) {
+const range = sel.getRangeAt(0);
+range.insertNode(br);
+range.setStartAfter(br);
+range.setEndAfter(br);
+sel.removeAllRanges();
+sel.addRange(range);
+e.preventDefault();
+saveCurrentFile();
+}
+}
+});
+
+const cvs = document.createElement('canvas');
+cvs.className = 'page-canvas';
+if (currentMode === 'pen') {
+cvs.classList.add('active-pen');
+}
+
+pageDiv.appendChild(editorDiv);
+pageDiv.appendChild(cvs);
+pageContainer.appendChild(pageDiv);
+if (pageContainer.children.length === 1 || index === activePageIndex) setActivePage(index);
+
+cvs.width = 794; 
+cvs.height = 1123; 
+const ctx = cvs.getContext('2d');
+ctx.lineCap = 'round';
+ctx.lineJoin = 'round';
+
+if (imgData) {
+const img = new Image();
+img.onload = () => {
+ctx.drawImage(img, 0, 0);
+saveUndoState(index, cvs.toDataURL(), true);
+};
+img.src = imgData;
+} else {
+saveUndoState(index, cvs.toDataURL(), true);
+}
+setupDrawingEvents(cvs, ctx, index);
+}
+
+function addInputPage() {
+const pages = pageContainer.querySelectorAll('.a4-page');
+createPageElement('', null, pages.length);
+saveCurrentFile();
+}
+</script>
+<script>
+function loadFolderData() {
+try {
+const saved = localStorage.getItem('TXT_ED_FOLDER');
+if (saved) {
+TXT_ED_FOLDER = JSON.parse(saved);
+}
+} catch(err) {}
+const files = Object.keys(TXT_ED_FOLDER);
+if (files.length === 0) {
+TXT_ED_FOLDER['memo1.txt'] = {
+pages: [{ html: '', img: null }]
+};
+currentFileName = 'memo1.txt';
+} else {
+const last = localStorage.getItem('TXT_ED_curr');
+currentFileName = TXT_ED_FOLDER[last] ? last : files[0];
+}
+try {
+localStorage.setItem('TXT_ED_curr', currentFileName);
+} catch(e){}
+fileNameDisplay.textContent = currentFileName;
+loadFileContent(currentFileName);
+renderFileList();
+}
+
+function loadFileContent(fileName) {
+pageContainer.innerHTML = '';
+activePageIndex = 0;
+undoStackMap.clear();
+redoStackMap.clear();
+const fileData = TXT_ED_FOLDER[fileName];
+if (fileData && fileData.pages) {
+fileData.pages.forEach((p, idx) => {
+createPageElement(p.html, p.img, idx);
+});
+} else {
+createPageElement('', null, 0);
+}
+updateCount();
+}
+
+function saveCurrentFile() {
+if (!currentFileName) return false;
+const pages = pageContainer.querySelectorAll('.a4-page');
+const pagesData = [];
+pages.forEach(p => {
+const ed = p.querySelector('.page-editor');
+const cvs = p.querySelector('.page-canvas');
+pagesData.push({
+html: ed.innerHTML,
+img: cvs.toDataURL()
+});
+});
+TXT_ED_FOLDER[currentFileName] = { pages: pagesData };
+try {
+localStorage.setItem('TXT_ED_FOLDER', JSON.stringify(TXT_ED_FOLDER));
+localStorage.setItem('TXT_ED_curr', currentFileName);
+storageWarningShown = false;
+} catch (e) {
+showStorageError(e);
+}
+scheduleIndexedDBSave();
+scheduleLocalFolderSave();
+updateCount();
+return true;
+}
+
+function deleteLastPage() {
+const pages = pageContainer.querySelectorAll('.a4-page');
+if (pages.length <= 1) {
+alert('これ以上ページを削除できません');
+return;
+}
+if (!confirm(`最後のページを完全に削除しますか？`)) {
+return;
+}
+const lastPage = pages[pages.length - 1];
+const idx = parseInt(lastPage.dataset.index);
+undoStackMap.delete(idx);
+redoStackMap.delete(idx);
+lastPage.remove();
+setActivePage(Math.max(0, Math.min(activePageIndex, pages.length - 2)));
+saveCurrentFile();
+}
+
+function setPdfFolderStatus(message) {
+  const el = document.getElementById('pdfFolderStatus');
+  if (el) el.textContent = message;
+}
+
+async function initPdfFolder() {
+  if (!localFileApiAvailable()) return;
+  try {
+    const handle = await getPdfFolderHandle();
+    if (!handle) return;
+    const permission = await handle.queryPermission({ mode: 'read' });
+    if (permission === 'granted') {
+      pdfFolderHandle = handle;
+      await scanPdfFolder();
+    } else {
+      setPdfFolderStatus('PDFフォルダ: ' + handle.name + '（再選択してください）');
+    }
+  } catch (e) { console.warn('PDFフォルダ復元失敗', e); }
+}
+
+async function savePdfFolderHandle(handle) {
+  try {
+    const db = await openLocalFolderDB();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction('settings', 'readwrite');
+      tx.objectStore('settings').put(handle, 'pdfFolderHandle');
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+  } catch (e) { console.warn('PDFフォルダ設定の保存失敗', e); }
+}
+
+async function getPdfFolderHandle() {
+  try {
+    const db = await openLocalFolderDB();
+    const handle = await new Promise((resolve, reject) => {
+      const tx = db.transaction('settings', 'readonly');
+      const req = tx.objectStore('settings').get('pdfFolderHandle');
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+    db.close();
+    return handle;
+  } catch (e) { return null; }
+}
+
+async function choosePdfFolder() {
+  if (typeof window.showDirectoryPicker === 'function') {
+    try {
+      const handle = await window.showDirectoryPicker({ mode: 'read' });
+      pdfFolderHandle = handle;
+      await savePdfFolderHandle(handle);
+      await scanPdfFolder();
+    } catch (e) {
+      if (e && e.name !== 'AbortError') alert('PDFフォルダを開けませんでした: ' + (e.message || e));
+    }
+  } else {
+    document.getElementById('pdfFallbackInput').click();
+  }
+}
+
+async function scanPdfFolder() {
+  const list = document.getElementById('pdfFileList');
+  if (!list) return;
+  pdfEntries = [];
+  try {
+    for await (const [name, handle] of pdfFolderHandle.entries()) {
+      if (handle.kind === 'file' && name.toLowerCase().endsWith('.pdf')) pdfEntries.push({ name, handle });
+    }
+    pdfEntries.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+    setPdfFolderStatus('PDFフォルダ: ' + pdfFolderHandle.name + ' (' + pdfEntries.length + '件)');
+    renderPdfList();
+  } catch (e) {
+    setPdfFolderStatus('PDFフォルダ: 読み込みエラー');
+    list.innerHTML = '<div class="pdf-empty">フォルダを読み込めませんでした。もう一度選択してください。</div>';
+  }
+}
+
+function loadPdfFilesFromInput(event) {
+  const files = Array.from(event.target.files || []).filter(file => file.name.toLowerCase().endsWith('.pdf'));
+  pdfEntries = files.sort((a, b) => a.name.localeCompare(b.name, 'ja')).map(file => ({ name: file.webkitRelativePath || file.name, file }));
+  const folderName = files.length && files[0].webkitRelativePath ? files[0].webkitRelativePath.split('/')[0] : '選択フォルダ';
+  setPdfFolderStatus('PDFフォルダ: ' + folderName + ' (' + pdfEntries.length + '件)');
+  renderPdfList();
+  event.target.value = '';
+}
+
+function renderPdfList() {
+  const list = document.getElementById('pdfFileList');
+  if (!list) return;
+  list.innerHTML = '';
+  if (!pdfEntries.length) {
+    list.innerHTML = '<div class="pdf-empty">このフォルダにPDFファイルがありません</div>';
+    return;
+  }
+  pdfEntries.forEach((entry, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'pdf-file-item';
+    button.textContent = '📄 ' + entry.name;
+    button.title = entry.name;
+    button.onclick = () => openPdfEntry(index);
+    list.appendChild(button);
+  });
+}
+
+async function openPdfEntry(index) {
+  const entry = pdfEntries[index];
+  if (!entry) return;
+  try {
+    if (!window.pdfjsLib || !window.PDFLib) throw new Error('PDF処理ライブラリを読み込めません。ZIP内のlibsフォルダに3つのライブラリがあるか確認してください。');
+    const file = entry.file || await entry.handle.getFile();
+    pdfCurrentName = entry.name || file.name || 'document.pdf';
+    pdfOriginalBytes = await file.arrayBuffer();
+    pdfjsLib.GlobalWorkerOptions.workerSrc = './libs/pdf.worker.min.js';
+    pdfDocument = await pdfjsLib.getDocument({ data: new Uint8Array(pdfOriginalBytes) }).promise;
+    document.getElementById('pdfViewerName').textContent = pdfCurrentName + ' (' + pdfDocument.numPages + 'ページ)';
+    document.getElementById('pdfPagesContainer').innerHTML = '';
+    pdfPageLayers = [];
+    pdfAnnotationDirty = false;
+    document.getElementById('pdfAnnotationExportBtn').style.display = 'none';
+    document.getElementById('pdfViewerOverlay').classList.add('open');
+    document.getElementById('workspace').classList.add('pdf-viewing');
+    document.querySelectorAll('.pdf-file-item').forEach((el, i) => el.classList.toggle('active', i === index));
+    setPdfAnnotationMode('browse');
+    const stageWidth = Math.max(320, document.getElementById('pdfStage').clientWidth - 48);
+    for (let pageNo = 1; pageNo <= pdfDocument.numPages; pageNo++) {
+      const page = await pdfDocument.getPage(pageNo);
+      const base = page.getViewport({ scale: 1 });
+      const scale = Math.min(stageWidth / base.width, 1.5);
+      const viewport = page.getViewport({ scale });
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const wrap = document.createElement('div');
+      wrap.className = 'pdf-page-wrap';
+      wrap.style.width = viewport.width + 'px';
+      wrap.style.height = viewport.height + 'px';
+      const pageCanvas = document.createElement('canvas');
+      pageCanvas.className = 'pdf-page-canvas';
+      pageCanvas.width = Math.round(viewport.width * dpr);
+      pageCanvas.height = Math.round(viewport.height * dpr);
+      const pageCtx = pageCanvas.getContext('2d');
+      await page.render({ canvasContext: pageCtx, viewport, transform: dpr === 1 ? null : [dpr,0,0,dpr,0,0] }).promise;
+      const textLayer = document.createElement('div');
+      textLayer.className = 'pdf-page-text';
+      textLayer.contentEditable = 'true';
+      textLayer.spellcheck = false;
+      textLayer.setAttribute('aria-label', 'PDFページ' + pageNo + 'への文字書き込み');
+      textLayer.addEventListener('input', markPdfAnnotationChanged);
+      const inkCanvas = document.createElement('canvas');
+      inkCanvas.className = 'pdf-page-ink';
+      inkCanvas.width = Math.round(viewport.width * dpr);
+      inkCanvas.height = Math.round(viewport.height * dpr);
+      inkCanvas.style.width = viewport.width + 'px';
+      inkCanvas.style.height = viewport.height + 'px';
+      const inkCtx = inkCanvas.getContext('2d');
+      inkCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      inkCtx.lineCap = 'round'; inkCtx.lineJoin = 'round'; inkCtx.strokeStyle = '#d93025'; inkCtx.lineWidth = 3;
+      inkCanvas.addEventListener('pointerdown', startPdfInk);
+      inkCanvas.addEventListener('pointermove', movePdfInk);
+      inkCanvas.addEventListener('pointerup', stopPdfInk);
+      inkCanvas.addEventListener('pointercancel', stopPdfInk);
+      inkCanvas.addEventListener('pointerleave', stopPdfInk);
+      wrap.appendChild(pageCanvas); wrap.appendChild(textLayer); wrap.appendChild(inkCanvas);
+      document.getElementById('pdfPagesContainer').appendChild(wrap);
+      pdfPageLayers.push({ pageNo, page, viewport, baseViewport:base, dpr, wrap, pageCanvas, textLayer, inkCanvas });
+    }
+    document.getElementById('pdfStage').scrollTop = 0;
+  } catch (e) { alert('PDFを開けませんでした: ' + (e.message || e)); }
+}
+
+function initPdfAnnotationCanvas() { /* ページごとのキャンバスはPDF読み込み時に作成します。 */ }
+
+function setPdfAnnotationMode(mode) {
+  pdfAnnotationMode = mode;
+  pdfPageLayers.forEach(layer => {
+    layer.textLayer.classList.toggle('active', mode === 'text');
+    layer.inkCanvas.classList.toggle('active', mode === 'pen');
+  });
+  ['text','pen','browse'].forEach(name => {
+    const id = name === 'text' ? 'pdfTextModeBtn' : name === 'pen' ? 'pdfPenModeBtn' : 'pdfBrowseModeBtn';
+    document.getElementById(id).classList.toggle('active', mode === name);
+  });
+  if (mode === 'text' && pdfPageLayers.length) {
+    const target = pdfPageLayers.find(x => x.textLayer.innerText.trim() === '') || pdfPageLayers[0];
+    target.textLayer.focus();
+  }
+}
+
+function markPdfAnnotationChanged() {
+  pdfAnnotationDirty = true;
+  document.getElementById('pdfAnnotationExportBtn').style.display = 'inline-block';
+}
+
+function pdfInkPoint(event) {
+  const rect = event.currentTarget.getBoundingClientRect();
+  return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+}
+
+function startPdfInk(event) {
+  if (pdfAnnotationMode !== 'pen') return;
+  event.preventDefault();
+  const canvas = event.currentTarget;
+  canvas.setPointerCapture(event.pointerId);
+  pdfInkDrawing = true;
+  pdfInkLast = pdfInkPoint(event);
+  const ctx = canvas.getContext('2d');
+  ctx.beginPath(); ctx.arc(pdfInkLast.x, pdfInkLast.y, 1.5, 0, Math.PI * 2); ctx.fillStyle = '#d93025'; ctx.fill();
+  markPdfAnnotationChanged();
+}
+
+function movePdfInk(event) {
+  if (!pdfInkDrawing || pdfAnnotationMode !== 'pen') return;
+  const point = pdfInkPoint(event);
+  const ctx = event.currentTarget.getContext('2d');
+  ctx.beginPath(); ctx.moveTo(pdfInkLast.x, pdfInkLast.y); ctx.lineTo(point.x, point.y);
+  ctx.strokeStyle = '#d93025'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke();
+  pdfInkLast = point;
+}
+
+function stopPdfInk() { pdfInkDrawing = false; pdfInkLast = null; }
+
+function pdfLayerHasInk(canvas) {
+  const ctx = canvas.getContext('2d');
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  for (let i = 3; i < data.length; i += 4) if (data[i] > 0) return true;
+  return false;
+}
+
+function makePdfPageComposite(layer) {
+  const out = document.createElement('canvas');
+  out.width = layer.pageCanvas.width; out.height = layer.pageCanvas.height;
+  const ctx = out.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, out.width, out.height);
+  ctx.drawImage(layer.pageCanvas, 0, 0);
+  ctx.drawImage(layer.inkCanvas, 0, 0);
+  const text = (layer.textLayer.innerText || '').replace(/\r/g, '').trim();
+  if (text) {
+    const scale = layer.dpr;
+    const fontSize = 18 * scale;
+    const lineHeight = 28 * scale;
+    const pad = 24 * scale;
+    const maxWidth = out.width - pad * 2;
+    ctx.fillStyle = '#111'; ctx.font = fontSize + 'px Arial, sans-serif'; ctx.textBaseline = 'top';
+    let y = pad;
+    text.split('\n').forEach(paragraph => {
+      let line = '';
+      for (const char of paragraph) {
+        const test = line + char;
+        if (line && ctx.measureText(test).width > maxWidth) { ctx.fillText(line, pad, y); y += lineHeight; line = char; }
+        else line = test;
+      }
+      ctx.fillText(line, pad, y); y += lineHeight;
+    });
+  }
+  return out;
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+
+async function exportPdfAnnotations() {
+  if (!pdfDocument || !pdfOriginalBytes || !pdfPageLayers.length) { alert('PDFが開かれていません。'); return; }
+  const hasChanges = pdfPageLayers.some(layer => (layer.textLayer.innerText || '').trim() || pdfLayerHasInk(layer.inkCanvas));
+  if (!hasChanges) { alert('書き込みがありません。文字書込または手書きで書き込んでください。'); return; }
+  const btn = document.getElementById('pdfAnnotationExportBtn');
+  btn.disabled = true; btn.textContent = '書き出し中…';
+  try {
+    const { PDFDocument } = PDFLib;
+    const output = await PDFDocument.load(pdfOriginalBytes);
+    for (const layer of pdfPageLayers) {
+      const composite = makePdfPageComposite(layer);
+      const pngBytes = await new Promise(resolve => composite.toBlob(blob => blob.arrayBuffer().then(resolve), 'image/png'));
+      const embedded = await output.embedPng(pngBytes);
+      const targetPage = output.getPage(layer.pageNo - 1);
+      const size = targetPage.getSize();
+      targetPage.drawImage(embedded, { x:0, y:0, width:size.width, height:size.height });
+      const pngBlob = await new Promise(resolve => composite.toBlob(resolve, 'image/png'));
+      downloadBlob(pngBlob, pdfCurrentName.replace(/\.pdf$/i, '') + '_page' + String(layer.pageNo).padStart(3,'0') + '.png');
+    }
+    const pdfBytes = await output.save();
+    downloadBlob(new Blob([pdfBytes], { type:'application/pdf' }), pdfCurrentName.replace(/\.pdf$/i, '') + '_書き込み済み.pdf');
+    btn.style.display = 'none'; pdfAnnotationDirty = false;
+    alert('書き込み済みPDFと各ページのPNG画像を書き出しました。');
+  } catch (e) {
+    console.error(e); alert('書き出しに失敗しました: ' + (e.message || e));
+  } finally { btn.disabled = false; btn.textContent = '📤 書き出し'; }
+}
+
+function closePdfViewer() {
+  document.getElementById('pdfViewerOverlay').classList.remove('open');
+  document.getElementById('workspace').classList.remove('pdf-viewing');
+  document.getElementById('pdfPagesContainer').innerHTML = '';
+  pdfPageLayers = []; pdfDocument = null; pdfOriginalBytes = null;
+  document.getElementById('pdfAnnotationExportBtn').style.display = 'none';
+  pdfAnnotationDirty = false;
+}
+
+function exportToPDF() {
+saveCurrentFile();
+window.print();
+}
+</script>
+<script>
+function createNewFile() {
+const name = prompt('新しいファイル名:', 'untitled');
+if (!name) return;
+const fullName = name.trim() + '.txt';
+if (TXT_ED_FOLDER[fullName]) {
+alert('同名ファイルがあります'); 
+return;
+}
+saveCurrentFile();
+TXT_ED_FOLDER[fullName] = { pages: [{ html: '', img: null }] };
+currentFileName = fullName;
+try {
+localStorage.setItem('TXT_ED_curr', currentFileName);
+}catch(e){}
+fileNameDisplay.textContent = currentFileName;
+loadFileContent(fullName);
+renderFileList();
+}
+
+function switchFile(name) {
+if (name === currentFileName) return;
+saveCurrentFile();
+currentFileName = name;
+try {
+localStorage.setItem('TXT_ED_curr', name);
+}catch(e){}
+fileNameDisplay.textContent = name;
+loadFileContent(name);
+renderFileList();
+}
+
+function deleteFile(name) {
+const len = Object.keys(TXT_ED_FOLDER).length;
+if (len <= 1) {
+alert('最後の1枚は削除不可'); 
+return;
+}
+if (confirm(`${name} を削除？`)) {
+delete TXT_ED_FOLDER[name];
+try {
+localStorage.setItem('TXT_ED_FOLDER', 
+JSON.stringify(TXT_ED_FOLDER));
+}catch(e){}
+loadFolderData();
+}
+}
+
+function changeFileName(targetName) {
+const oldName = targetName.replace('.txt', '');
+const newName = prompt('新しいファイル名:', oldName);
+if (!newName || newName.trim() === '') return;
+const fullName = newName.trim() + '.txt';
+if (fullName !== targetName && TXT_ED_FOLDER[fullName]) {
+alert('既に使われています'); 
+return;
+}
+
+const newFolder = {};
+Object.keys(TXT_ED_FOLDER).forEach(k => {
+if (k === targetName) {
+newFolder[fullName] = TXT_ED_FOLDER[targetName];
+} else {
+newFolder[k] = TXT_ED_FOLDER[k];
+}
+});
+TXT_ED_FOLDER = newFolder;
+
+if (targetName === currentFileName) {
+currentFileName = fullName;
+try {
+localStorage.setItem('TXT_ED_curr', currentFileName);
+}catch(e){}
+fileNameDisplay.textContent = fullName;
+}
+saveCurrentFile();
+renderFileList();
+}
+
+function moveFileOrder(name, direction) {
+saveCurrentFile();
+const keys = Object.keys(TXT_ED_FOLDER);
+const index = keys.indexOf(name);
+if (index === -1) return;
+
+const targetIdx = direction === 'up' ? index - 1 : index + 1;
+if (targetIdx < 0 || targetIdx >= keys.length) return;
+
+const temp = keys[index];
+keys[index] = keys[targetIdx];
+keys[targetIdx] = temp;
+
+const rearrangedFolder = {};
+keys.forEach(k => {
+rearrangedFolder[k] = TXT_ED_FOLDER[k];
+});
+TXT_ED_FOLDER = rearrangedFolder;
+
+try {
+localStorage.setItem('TXT_ED_FOLDER', JSON.stringify(TXT_ED_FOLDER));
+} catch(e){}
+renderFileList();
+}
+
+function bindLongPress(element, fileName) {
+let pressTimer = null;
+let isLongPress = false;
+
+const startPress = (e) => {
+if (e.button && e.button !== 0) return;
+isLongPress = false;
+pressTimer = setTimeout(() => {
+isLongPress = true;
+changeFileName(fileName);
+}, 1000);
+};
+
+const endPress = (e) => {
+if (pressTimer !== null) {
+clearTimeout(pressTimer);
+pressTimer = null;
+}
+if (!isLongPress) {
+switchFile(fileName);
+}
+};
+
+const cancelPress = () => {
+if (pressTimer !== null) {
+clearTimeout(pressTimer);
+pressTimer = null;
+}
+};
+
+element.addEventListener('mousedown', startPress);
+element.addEventListener('touchstart', startPress, {passive: true});
+element.addEventListener('mouseup', endPress);
+element.addEventListener('touchend', endPress);
+element.addEventListener('mouseleave', cancelPress);
+element.addEventListener('touchmove', cancelPress);
+}
+
+function renderFileList() {
+fileListContainer.innerHTML = '';
+Object.keys(TXT_ED_FOLDER).forEach(name => {
+const item = document.createElement('div');
+const isActive = name === currentFileName;
+item.className = 'file-item' + (isActive ? ' active' : '');
+
+const leftClickZone = document.createElement('div');
+leftClickZone.style.flex = "1";
+leftClickZone.style.display = "flex";
+leftClickZone.style.alignItems = "center";
+leftClickZone.style.padding = "10px 0 10px 8px";
+leftClickZone.style.cursor = "pointer";
+
+const nameSpan = document.createElement('span');
+nameSpan.textContent = name;
+leftClickZone.appendChild(nameSpan);
+
+bindLongPress(leftClickZone, name);
+item.appendChild(leftClickZone);
+
+const controlsDiv = document.createElement('div');
+controlsDiv.className = 'file-controls';
+
+const upBtn = document.createElement('span');
+upBtn.className = 'move-btn';
+upBtn.textContent = '▲';
+upBtn.onclick = (e) => {
+e.stopPropagation();
+moveFileOrder(name, 'up');
+};
+controlsDiv.appendChild(upBtn);
+
+const downBtn = document.createElement('span');
+downBtn.className = 'move-btn';
+downBtn.textContent = '▽';
+downBtn.onclick = (e) => {
+e.stopPropagation();
+moveFileOrder(name, 'down');
+};
+controlsDiv.appendChild(downBtn);
+
+const delSpan = document.createElement('span');
+delSpan.textContent = '✕';
+delSpan.className = 'delete-btn';
+delSpan.onclick = (e) => {
+e.stopPropagation(); 
+e.preventDefault();
+deleteFile(name);
+};
+controlsDiv.appendChild(delSpan);
+
+item.appendChild(controlsDiv);
+fileListContainer.appendChild(item);
+});
+}
+</script>
+<script>
+let isDrawing = false;
+let startDrawX = 0, startDrawY = 0;
+let canvasSnap = null;
+
+function setupDrawingEvents(cvs, ctx, pageIdx) {
+cvs.addEventListener('pointerdown', (e) => {
+if (currentMode !== 'pen') return;
+isDrawing = true;
+const r = cvs.getBoundingClientRect();
+startDrawX = (e.clientX - r.left) * (cvs.width / r.width);
+startDrawY = (e.clientY - r.top) * (cvs.height / r.height);
+
+ctx.beginPath();
+if (isEraser) {
+ctx.globalCompositeOperation = 'destination-out';
+ctx.lineWidth = penWidth * 3;
+ctx.moveTo(startDrawX, startDrawY);
+} else {
+ctx.globalCompositeOperation = 'source-over';
+ctx.strokeStyle = selectedColor;
+ctx.lineWidth = penWidth;
+if (currentShape === 'free') {
+ctx.moveTo(startDrawX, startDrawY);
+} else {
+canvasSnap = ctx.getImageData(0, 0, cvs.width, cvs.height);
+}
+}
+});
+
+cvs.addEventListener('pointermove', (e) => {
+if (!isDrawing || currentMode !== 'pen') return;
+const r = cvs.getBoundingClientRect();
+const currX = (e.clientX - r.left) * (cvs.width / r.width);
+const currY = (e.clientY - r.top) * (cvs.height / r.height);
+
+if (isEraser || currentShape === 'free') {
+ctx.lineTo(currX, currY); 
+ctx.stroke();
+} else {
+ctx.putImageData(canvasSnap, 0, 0);
+ctx.beginPath();
+ctx.moveTo(startDrawX, startDrawY);
+ctx.lineTo(currX, currY);
+ctx.stroke();
+
+if (currentShape === 'arrow') {
+const angle = Math.atan2(currY - startDrawY, currX - startDrawX);
+const arrowLen = penWidth * 4 + 10;
+ctx.lineTo(currX - arrowLen * Math.cos(angle - Math.PI / 6),
+currY - arrowLen * Math.sin(angle - Math.PI / 6));
+ctx.moveTo(currX, currY);
+ctx.lineTo(currX - arrowLen * Math.cos(angle + Math.PI / 6),
+currY - arrowLen * Math.sin(angle + Math.PI / 6));
+ctx.stroke();
+}
+}
+});
+
+const stopDraw = () => {
+if (isDrawing) {
+isDrawing = false; 
+ctx.closePath();
+canvasSnap = null;
+saveUndoState(pageIdx, cvs.toDataURL(), true); 
+saveCurrentFile();
+}
+};
+cvs.addEventListener('pointerup', stopDraw);
+cvs.addEventListener('pointerleave', stopDraw);
+}
+
+function saveUndoState(idx, dataurl, clearRedo = false) {
+if (!undoStackMap.has(idx)) undoStackMap.set(idx, []);
+const stack = undoStackMap.get(idx);
+if (stack.length >= 10) {
+stack.shift();
+}
+stack.push(dataurl);
+
+if (clearRedo) {
+redoStackMap.set(idx, []);
+}
+}
+
+function undoPen() {
+const p = getActivePage();
+if (!p) return;
+const idx = parseInt(p.dataset.index);
+const uStack = undoStackMap.get(idx);
+if (uStack && uStack.length > 1) {
+if (!redoStackMap.has(idx)) redoStackMap.set(idx, []);
+const rStack = redoStackMap.get(idx);
+const currentImg = uStack.pop();
+rStack.push(currentImg);
+const prevState = uStack[uStack.length - 1];
+const cvs = p.querySelector('.page-canvas');
+const context = cvs.getContext('2d');
+const img = new Image();
+img.onload = () => {
+context.clearRect(0, 0, cvs.width, cvs.height);
+context.drawImage(img, 0, 0);
+saveCurrentFile();
+};
+img.src = prevState;
+}
+}
+
+function redoPen() {
+const p = getActivePage();
+if (!p) return;
+const idx = parseInt(p.dataset.index);
+const rStack = redoStackMap.get(idx);
+if (rStack && rStack.length > 0) {
+const nextState = rStack.pop();
+if (!undoStackMap.has(idx)) undoStackMap.set(idx, []);
+undoStackMap.get(idx).push(nextState);
+const cvs = p.querySelector('.page-canvas');
+const context = cvs.getContext('2d');
+const img = new Image();
+img.onload = () => {
+context.clearRect(0, 0, cvs.width, cvs.height);
+context.drawImage(img, 0, 0);
+saveCurrentFile();
+};
+img.src = nextState;
+}
+}
+
+</script>
+<script>
+function initPalette() {
+const container = document.getElementById('paletteContainer');
+container.querySelectorAll('.color-dot').forEach(d => d.remove());
+baseColors.forEach((color) => {
+const dot = document.createElement('div');
+const isSel = color === selectedColor;
+dot.className = 'color-dot' + (isSel ? ' selected' : '');
+dot.style.backgroundColor = color;
+if (color === '#ffffff') dot.style.borderColor = '#5f6368';
+dot.onmousedown = (e) => e.preventDefault();
+dot.onclick = () => selectColor(color, dot);
+container.insertBefore(dot, container.firstChild);
+});
+}
+
+function selectColor(color, element) {
+disableEraser(); 
+selectedColor = color;
+document.querySelectorAll('.color-dot').forEach(d => 
+d.classList.remove('selected'));
+element.classList.add('selected');
+if (currentMode === 'text') {
+const sel = window.getSelection();
+if (savedRange) {
+sel.removeAllRanges(); sel.addRange(savedRange);
+}
+document.execCommand('foreColor', false, color);
+saveCurrentFile();
+}
+}
+
+function addCustomColor(color) {
+if(!baseColors.includes(color)){
+baseColors.unshift(color);
+if(baseColors.length > 16) baseColors.pop();
+}
+selectedColor = color; initPalette(); disableEraser();
+if (currentMode === 'text') {
+const sel = window.getSelection();
+if (savedRange) {
+sel.removeAllRanges(); sel.addRange(savedRange);
+}
+document.execCommand('foreColor', false, color);
+saveCurrentFile();
+}
+}
+
+function setEraserMode() {
+if (currentMode !== 'pen') setMode('pen');
+isEraser = !isEraser;
+btnEraser.classList.toggle('active', isEraser);
+document.querySelectorAll('.color-dot').forEach(d => 
+d.classList.remove('selected'));
+statusHint.textContent = isEraser ? '状態: 🧽 消しゴム' : '状態: ✏️ ペン書込';
+if (!isEraser) initPalette();
+}
+
+function disableEraser() { 
+isEraser = false; btnEraser.classList.remove('active'); 
+}
+
+function setShape(shape) {
+currentShape = shape;
+disableEraser();
+if (!isEraser) initPalette();
+document.querySelectorAll('.shape-switching button').forEach(b => {
+b.classList.remove('active');
+});
+document.getElementById('shape' + shape.charAt(0).toUpperCase() + 
+shape.slice(1)).classList.add('active');
+}
+
+function onSizeChange(val) {
+sliderValue.textContent = val;
+if (currentMode === 'pen') {
+penWidth = parseInt(val);
+const canvases = pageContainer.querySelectorAll('.page-canvas');
+canvases.forEach(c => c.getContext('2d').lineWidth = penWidth);
+} else { 
+textFontSize = parseInt(val);
+const sel = window.getSelection();
+if (savedRange) {
+sel.removeAllRanges();
+sel.addRange(savedRange);
+}
+document.execCommand('fontSize', false, textFontSize.toString()); 
+saveCurrentFile();
+}
+}
+
+function execCmd(cmd) { 
+if (currentMode === 'text') {
+const sel = window.getSelection();
+if (savedRange) {
+sel.removeAllRanges(); sel.addRange(savedRange);
+}
+document.execCommand(cmd, false, null); 
+saveCurrentFile();
+checkDecorState();
+}
+}
+
+function setMode(mode) {
+currentMode = mode; 
+disableEraser();
+document.getElementById('btnText').classList.toggle('active', mode === 'text');
+document.getElementById('btnPen').classList.toggle('active', mode === 'pen');
+const canvases = pageContainer.querySelectorAll('.page-canvas');
+
+if (mode === 'pen') {
+canvases.forEach(c => c.classList.add('active-pen'));
+shapeBar.classList.add('active');
+statusHint.textContent = '状態: ✏️ ペン書込'; 
+sliderLabel.textContent = '太さ:';
+sizeSlider.min = "1"; sizeSlider.max = "15"; 
+sizeSlider.value = penWidth.toString();
+sliderValue.textContent = penWidth;
+} else {
+canvases.forEach(c => c.classList.remove('active-pen'));
+shapeBar.classList.remove('active');
+statusHint.textContent = '状態: ⌨️ 文字入力'; 
+sliderLabel.textContent = 'サイズ:';
+sizeSlider.min = "1"; sizeSlider.max = "7"; 
+sizeSlider.value = textFontSize.toString();
+sliderValue.textContent = textFontSize;
+checkDecorState();
+}
+if (!isEraser) initPalette();
+}
+</script>
+
+<script>
+function triggerImgUp() { 
+getActivePage();
+if (currentMode !== 'text') {
+setMode('text');
+}
+document.getElementById('imgInput').click(); 
+}
+
+function insertImg(e) {
+if (!e || !e.target || !e.target.files || e.target.files.length === 0) return;
+const file = e.target.files[0]; // 明示的に要素0番目のオブジェクトを直展開
+
+const reader = new FileReader();
+reader.onload = (event) => {
+const blockId = 'img_' + Date.now();
+const tag = '<div class="img-block" id="' + blockId + '" ' +
+'style="position:absolute;left:50px;top:50px;width:200px;' +
+'display:inline-block;" onmousedown="initMove(event,this,\'drag\')">' +
+'<img src="' + event.target.result + '" draggable="false" ' +
+'style="width:100%;display:block;user-drag:none;">' +
+'<div class="img-handle" style="position:absolute;right:0;bottom:0;' +
+'width:14px;height:14px;background:#1a73e8;cursor:se-resize;" ' +
+'onmousedown="initMove(event,this.parentNode,\'size\')"></div></div>';
+
+const activePage = getActivePage();
+const targetEditor = activePage ? activePage.querySelector('.page-editor') : null;
+if(targetEditor) {
+targetEditor.focus();
+targetEditor.insertAdjacentHTML('beforeend', tag);
+
+setTimeout(() => {
+const newBlock = targetEditor.querySelector('#' + blockId);
+if (newBlock) {
+const sel = window.getSelection();
+const range = document.createRange();
+range.selectNode(newBlock);
+sel.removeAllRanges();
+sel.addRange(range);
+saveSelection();
+}
+}, 50);
+}
+saveCurrentFile(); 
+e.target.value = '';
+}; 
+reader.readAsDataURL(file);
+}
+
+function clearCanvas() {
+if (!confirm('手描きをすべて消去しますか？')) return;
+pageContainer.querySelectorAll('.a4-page').forEach(p => {
+const cvs = p.querySelector('.page-canvas');
+cvs.getContext('2d').clearRect(0, 0, cvs.width, cvs.height);
+saveUndoState(parseInt(p.dataset.index), cvs.toDataURL(), true);
+});
+saveCurrentFile();
+}
+
+function updateCount() {
+let total = 0;
+pageContainer.querySelectorAll('.page-editor').forEach(ed => {
+total += (ed.innerText || '').length;
+}); 
+charCount.textContent = `文字数: ${total}`;
+}
+
+function generateHTMLBlob(pagesData) {
+let pagesHTML = '';
+pagesData.forEach(p => {
+let imgTag = p.img && p.img !== "data:," ? 
+'<img class="i" src="' + p.img + '">' : '';
+pagesHTML += '<div class="w"><div class="t">' + p.html + 
+'</div>' + imgTag + '</div>';
+});
+const fullHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' +
+'body{margin:0;padding:0;background:#f5f5f5;}.w{position:relative;width:210mm;' +
+'height:297mm;background:#fff;margin:20px auto;box-shadow:0 0 10px rgba(0,0,0,0.1);' +
+'page-break-after:always;}.t{position:absolute;top:0;left:0;width:100%;height:100%;' +
+'padding:20mm;font-size:16px;line-height:1.6;z-index:1;box-sizing:border-box;' +
+'overflow:hidden;}.t .img-block{position:absolute;z-index:5;}.t img{width:100%;' +
+'display:block;}.img-handle{display:none !important;}.i{position:absolute;top:0;' +
+'left:0;width:100%;height:100%;z-index:2;pointer-events:none;}@media print{' +
+'body{background:none;}.w{margin:0;box-shadow:none;}}</style></head><body>' + 
+pagesHTML + '</body></html>';
+return new Blob([fullHTML], { type: 'text/html' });
+}
+
+function downloadFile() {
+saveCurrentFile();
+const baseName = currentFileName.replace('.txt', '');
+const blob = generateHTMLBlob(TXT_ED_FOLDER[currentFileName].pages);
+const a = document.createElement('a');
+a.href = URL.createObjectURL(blob);
+a.download = `[TXT_ED]_${baseName}.html`; 
+a.click();
+}
+
+function downloadAllFiles() {
+saveCurrentFile(); 
+const fileNames = Object.keys(TXT_ED_FOLDER);
+fileNames.forEach((name, index) => {
+setTimeout(() => {
+const blob = generateHTMLBlob(TXT_ED_FOLDER[name].pages);
+const a = document.createElement('a');
+a.href = URL.createObjectURL(blob);
+a.download = `[TXT_ED]_${name.replace('.txt', '')}.html`; 
+a.click();
+}, index * 350);
+});
+}
+</script>
+</body>
+</html>
